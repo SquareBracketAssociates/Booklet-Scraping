@@ -1,4 +1,4 @@
-!! Scrapping HTML
+!! Scraping HTML
 Internet pages provide a lot of information and often you would like to be able to access and manipulate it in another form than HTML: HTML is just plain verbose. What you would like is to get access to only the information you are interested in and get the results in a form that you can easily build more software. This is the objectives of HTML scrapping. In Pharo you can scrap web pages using different libraries such as XMLParser and SOUP. 
 In this chappter we will show you how we can do that using XMLParser to scrap and JSON to collect information. 
 This chapter has been originally written by Peter Kenny. 
