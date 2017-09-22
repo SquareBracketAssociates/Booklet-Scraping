@@ -1,0 +1,27 @@
+{
+    "package": {
+        "name": "booklet-scrapping",
+        "repo": "wip",
+        "subject": "squarebracketassociates",
+        "desc": "Infrstructure",
+        "licenses": ["MIT"],
+        "website_url": "https://github.com/SquareBracketAssociates/Booklet-Scrapping",
+        "issue_tracker_url": "https://github.com/SquareBracketAssociates/Booklet-Scrapping/issues",
+        "vcs_url": "https://github.com/SquareBracketAssociates/Booklet-Scrapping.git",
+        "labels": ["work-in-progress"]
+    },
+
+    "version": {
+        "name": "latest",
+        "desc": "Latest successful build"
+    },
+
+    "files": [
+        {
+            "includePattern": "build/scrappingbook.pdf",
+            "uploadPattern": "scrappingbook-wip.pdf",
+            "matrixParams": { "override": 1 }
+        }
+    ],
+    "publish": true
+}
