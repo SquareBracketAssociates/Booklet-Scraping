@@ -1,13 +1,13 @@
 {
     "package": {
-        "name": "booklet-scrapping",
+        "name": "booklet-scraping",
         "repo": "wip",
         "subject": "squarebracketassociates",
-        "desc": "Infrstructure",
+        "desc": "Scriping XPath and more",
         "licenses": ["MIT"],
-        "website_url": "https://github.com/SquareBracketAssociates/Booklet-Scrapping",
-        "issue_tracker_url": "https://github.com/SquareBracketAssociates/Booklet-Scrapping/issues",
-        "vcs_url": "https://github.com/SquareBracketAssociates/Booklet-Scrapping.git",
+        "website_url": "https://github.com/SquareBracketAssociates/Booklet-Scraping",
+        "issue_tracker_url": "https://github.com/SquareBracketAssociates/Booklet-Scraping/issues",
+        "vcs_url": "https://github.com/SquareBracketAssociates/Booklet-Scraping.git",
         "labels": ["work-in-progress"]
     },
 
@@ -18,8 +18,8 @@
 
     "files": [
         {
-            "includePattern": "build/scrappingbook.pdf",
-            "uploadPattern": "scrappingbook-wip.pdf",
+            "includePattern": "build/scrapingbook.pdf",
+            "uploadPattern": "scrapingbook-wip.pdf",
             "matrixParams": { "override": 1 }
         }
     ],
