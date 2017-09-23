@@ -36,7 +36,7 @@ Let us take for example the following site
 *https://ndb.nal.usda.gov/ndb/foods?format=&count=&max=100&sort=&fgcd=&manu=&lfacet=&qlookup=&offset=0&order=desc*.
 
 
-+A possible source of information.>file://figures/Food.png|width=100|label=fgmap+
++A possible source of information.>file://figures/food.png|width=100|label=fgmap+
 
 
 !!! First cut 
