@@ -1,7 +1,8 @@
 !! Little Journey into XPath
 
-XPath is the de factor standard language to represent queries to identify nods into an xml structure. 
-
+XPath is the de factor standard language to represent queries to identify nodes in an xml structure.
+In this chapter we will go through the main concepts and show some of the way we can access nodes in a xml document.
+All the expressions can be executed on the spot so do not hesitate to experiment with them. 
 
 !!! Getting started
 
@@ -23,56 +24,233 @@ Gofer it
 
 !!! An example
 
+As an example we will take the possible representation of Magic cards. 
+Here is for example how we can represent  Arcane Lighthouse that you can see at *http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430*
+and is shown in Figure *@ligthouse*. 
+
++http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430.>file://figures/lighthouse.png|width=100|label=ligthouse+
+
+[[[
+	<?xml version="1.0" encoding="UTF-8"?>
+
+	<cardset>
+	  <card>
+	    <cardname lang="en">Arcane Lighthouse</cardname>
+	    <types>Land</types>
+	    <year>2014</year>
+		<rarity>Uncommon</rarity>
+		<expansion>Commander 2014</expansion>
+	    <cardtext>Tap: Add 1 uncolor to you mana pool. 
+		1 uncolor + Tap: Until end of turn, creatures your opponents
+		 control lose hexproof and shroud and can't have 
+		 hexproof or shroud.</cardtext>
+	  </card>
+	</cardset>
+]]]
+
+!!! Accessing a tree object
+
+In Pharo it is always powerful to get an object and interact with it. So let us do that now using the ==XMLDOMParser==.
+Note that the escaped the =='== with an extra quote as in ==can''t==. 
+
 [[[
 	| tree |
 	tree := (XMLDOMParser on: 
 	'<?xml version="1.0" encoding="UTF-8"?>
 
-	<bookstore>
-	  <book>
-	    <title lang="en">Harry Potter</title>
-	    <author>J K. Rowling</author>
-	    <year>2005</year>
-	    <price>29.99</price>
-	  </book>
-	</bookstore>') parseDocument
+	<cardset>
+	  <card>
+	    <cardname lang="en">Arcane Lighthouse</cardname>
+	    <types>Land</types>
+	    <year>2014</year>
+	    <rarity>Uncommon</rarity>
+	    <expansion>Commander 2014</expansion>
+	    <cardtext>Tap: Add 1 uncolor to you mana pool. 
+		1 uncolor + Tap: Until end of turn, creatures your opponents
+		 control lose hexproof and shroud and can''t have 
+		 hexproof or shroud.</cardtext>
+	  </card>
+	</cardset>') parseDocument
 ]]]
 
 
-+.>file://figures/xpath1.png|width=100|label=inspector+
++Grabbing and playing with a tree.>file://figures/xpath1.png|width=100|label=inspector+
+
+!!! Nodes and atomic values
 
 The following elements are nodes:
 [[[
-<bookstore> (root element node)
+<cardset> (root element node)
 
-<author>J K. Rowling</author> (element node)
+<cardname lang="en">Arcane Lighthouse</cardname> (element node)
 
 lang="en" (attribute node)
 ]]]
 
-
-Atomic values are nodes with no children or parent. Example of atomic values:
+Atomic values are nodes with no children or parent. Here are some examples of atomic values:
 
 [[[
-J K. Rowling
+Arcane Lighthouse
 
 "en"
 ]]]
 
-!!! Tree relationships
+!!! Basic tree relationships
+
+Since we are talking about trees, nodes can have multiple relationships with each other: parent, child and siblings. 
+Let us set some simple vocabulary. 
+
+- ""Parent."" Each element and attribute has one parent. In the Arcane Lighthouse example, the card element is the parent of the cardname, types, year, rarity, expansion and cardtext.
+
+- ""Children."" Element nodes may have zero, one or more children. cardname, types, year, rarity, expansion and cardtext nodes are all children of the card element
+
+- ""Siblings."" Siblings are nodes that have the same parent. cardname, types, year, rarity, expansion and cardtext nodes are all siblings. 
+
+- ""Ancestors."" A node's parent, parent's parent, etc. Ancestors of the cardname element are the card element and the cardset nodes. 
+
+- ""Descendants"" A node's children, children's children, etc. Descendants of the cardset element are the card,cardname, types, year, rarity, expansion and cardtext elements.
 
 
+!!! A large example
+
+Let us expand our example to have cover more cases.
+
+[[[
+	
+	| tree |
+	tree := (XMLDOMParser on: 
+	'<?xml version="1.0" encoding="UTF-8"?>
+
+	<cardset>
+	  <card>
+	    <cardname lang="en">Arcane Lighthouse</cardname>
+	    <types>Land</types>
+	    <year>2014</year>
+	    <rarity>Uncommon</rarity>
+	    <expansion>Commander 2014</expansion>
+	    <cardtext>Tap: Add 1 uncolor to you mana pool. 
+		1 uncolor + Tap: Until end of turn, creatures your opponents
+		 control lose hexproof and shroud and can''t have 
+		 hexproof or shroud.</cardtext>
+	  </card>
+	  <card>
+	    <cardname lang="en">Desolate Lighthouse</cardname>
+	    <types>Land</types>
+	    <year>2013</year>
+	    <rarity>Rare</rarity>
+	    <expansion>Avacyn Restored</expansion>
+	    <cardtext>Tap: Add Colorless to your mana pool.
+	1BlueRed, Tap: Draw a card, then discard a card.</cardtext>
+	  </card>
+	</cardset>') parseDocument
+]]]
+
++Select the raw tab and click on self in the inspector.>file://figures/xpath2.png|width=100|label=inspector2+
+
+Select the raw tab and click on self in the inspector (as shown in Figure *@inspector2*). Now we are ready to learn XPath.
 
 !!! Node selection
 
+The following table shows the XPath expressions: 
 
-| ""Expression"" |Description |
+| ""Expression"" |""Description""|
 | nodename | Selects all nodes with the name "nodename" |
 |/ |Selects from the root node|
 |// | Selects nodes in the document from the current node that match the selection no matter where they are|
 |. | Selects the current node |
 |..|Selects the parent of the current node|
 |@ |Selects attributes|
+
+In the following we expect that the variable tree is bound the full tree. 
+Expressions selecting nodes returns set of nodes. 
+
+The following expression shows that ==.== selects the current node.
+[[[
+(tree xpath: '.') first == tree
+>>> true
+]]]
+
+
+!!!! Matching path based children nodes
+The operator ==/== selects from the root node.
+The following expression selects all the card nodes under cardset node.
+
+[[[
+path := XPath for: '/cardset/card'.
+path in: tree.
+]]]
+
+It is equivalent to the following expression using the ==xpath:== message
+
+[[[
+tree xpath: '/cardset/card'
+]]]
+
+!!!! Matching deep nodes
+Now the ==//== operation selects all the nodes
+
+[[[
+tree xpath: '//expansion'
+>>>
+a XPathNodeSet(<expansion>Commander 2014</expansion> <expansion>Avacyn Restored</expansion>)
+]]]
+
+In Pharo you can also send message to the node. So the previous expression can be expressed as follows:
+
+[[[
+tree // 'expansion'
+]]]
+
+
+
+!!! Glimpse at XPath
+The Pharo XPath packages offers a large API - check the API of the classes ==XMLNode== and ==XMLNodeSets==. 
+It supports XPath expressions in the context of XMLNodes with optional custom context objects to control evaluation. 
+It supports complete XPath 1.0 syntax with extensions.
+
+Basic usage:
+
+[[[
+	| doc path result context |
+	doc := XMLDOMParser parse: '<test>test contents</test>'.
+	path := XPath for: '/test'.
+	result := path in: doc.
+
+	"with a custom context"
+	path := XPath for: '/*[name() = $name]'.
+	context :=  XPathContext new.
+	context
+		variableAt: 'name'
+		put: 'test'.
+	result :=
+		path
+			in: doc
+			context: context.
+]]]
+
+
+
+XPath expressions can be encoded directly in Pharo using special binary selectors on ==XMLNodes== and  ==XMLNodeSets==:
+
+[[[
+	xmlNode // 'entry' / '*' / 'link' @ 'href'.
+]]]
+
+Block or position predicates can be applied with ?? to axis node test arguments or to result node sets. This returns the first element of each 'entry' descendant:
+
+[[[
+	xmlNode // 'entry' / ('*' ?? 1).
+]]]
+
+The following returns the first (document order) element of the first (document order) 'entry' descendant:
+[[[
+	(xmlNode // 'entry' / '*') ?? 1.
+	xmlNode // 'entry' / '*' ?? 1. "same"
+]]]
+
+
+
+
 
 | ""Path Expression"" | ""Result""
 |bookstore | Selects all nodes with the name "bookstore"|
