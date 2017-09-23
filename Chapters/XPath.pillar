@@ -51,7 +51,7 @@ and is shown in Figure *@ligthouse*.
 !!! Accessing a tree object
 
 In Pharo it is always powerful to get an object and interact with it. So let us do that now using the ==XMLDOMParser==.
-Note that the escaped the =='== with an extra quote as in ==can''t==. 
+Note that the escaped the =='== with an extra quote as in ==can\'\'t==. 
 
 [[[
 	| tree |
@@ -157,14 +157,15 @@ The following table shows the XPath expressions:
 | nodename | Selects all nodes with the name "nodename" |
 |/ |Selects from the root node|
 |// | Selects nodes in the document from the current node that match the selection no matter where they are|
-|. | Selects the current node |
+| . | Selects the current node |
 |..|Selects the parent of the current node|
 |@ |Selects attributes|
 
 In the following we expect that the variable tree is bound the full tree. 
 Expressions selecting nodes returns set of nodes. 
 
-The following expression shows that ==.== selects the current node.
+The following expression shows that period selects the current node.
+
 [[[
 (tree xpath: '.') first == tree
 >>> true
