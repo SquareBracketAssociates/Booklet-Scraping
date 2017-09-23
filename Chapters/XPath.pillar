@@ -215,7 +215,7 @@ The ==//== operation selects all the nodes matching the selection.
 
 | ""//"" | ""Selects any node from the current node that match the selection"" |
 | //year | Selects all year nodes in all the children of the current node |
-| cardset//year | Selects all year nodes in all the children of the current node |
+| cardset//year | Selects all year nodes that are descendant of the cardset element |
 
 Let us try with another element such as the expansion of a card. 
 [[[
@@ -229,9 +229,6 @@ In Pharo you can also send message to the node. So the previous expression can b
 [[[
 tree // 'expansion'
 ]]]
-
-
-
 
 
 !!!! Identifying attributes
@@ -250,7 +247,13 @@ The following expression returns all the attributes whose name is ==lang==.
 >>>  a XPathNodeSet(lang=""en"" lang=""en"")
 ]]]
 
-!!! Glimpse at XPath
+
+
+
+
+
+!!! Glimpse at XPath to be rewritten
+
 The Pharo XPath packages offers a large API - check the API of the classes ==XMLNode== and ==XMLNodeSets==. 
 It supports XPath expressions in the context of XMLNodes with optional custom context objects to control evaluation. 
 It supports complete XPath 1.0 syntax with extensions.
@@ -283,7 +286,7 @@ XPath expressions can be encoded directly in Pharo using special binary selector
 	xmlNode // 'entry' / '*' / 'link' @ 'href'.
 ]]]
 
-Block or position predicates can be applied with ?? to axis node test arguments or to result node sets. This returns the first element of each 'entry' descendant:
+Block or position predicates can be applied with ==??== to axis node test arguments or to result node sets. This returns the first element of each 'entry' descendant:
 
 [[[
 	xmlNode // 'entry' / ('*' ?? 1).
@@ -294,17 +297,3 @@ The following returns the first (document order) element of the first (document 
 	(xmlNode // 'entry' / '*') ?? 1.
 	xmlNode // 'entry' / '*' ?? 1. "same"
 ]]]
-
-
-
-
-
-| ""Path Expression"" | ""Result""
-|bookstore | Selects all nodes with the name "bookstore"|
-| /bookstore | Selects the root element bookstore |
-| bookstore/book| Selects all book elements that are children of bookstore |
-| //book| Selects all book elements no matter where they are in the document|
-| bookstore//book| Selects all book elements that are descendant of the bookstore element, no matter where they are under the bookstore element|
-//@lang |Selects all attributes that are named lang|
-
-Note: If the path starts with a slash ( / ) it always represents an absolute path to an element!
