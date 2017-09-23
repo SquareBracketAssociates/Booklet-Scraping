@@ -151,20 +151,32 @@ Select the raw tab and click on self in the inspector (as shown in Figure *@insp
 
 !!! Node selection
 
-The following table shows the XPath expressions: 
+The following table shows the XPath expressions. 
 
 | ""Expression"" |""Description""|
 | nodename | Selects all nodes with the name "nodename" |
 |/ |Selects from the root node|
-|// | Selects nodes in the document from the current node that match the selection no matter where they are|
+|// | Selects any node from the current node that match the selection|
 | . | Selects the current node |
 |..|Selects the parent of the current node|
 |@ |Selects attributes|
 
-In the following we expect that the variable tree is bound the full tree. 
-Expressions selecting nodes returns set of nodes. 
 
-The following expression shows that period selects the current node.
+In the following we expect that the variable ==tree== is bound the full document tree we previously created parsing the xml string.
+In Pharo expressions selecting nodes returns set of nodes. Now let us play with the system to really see how it works. 
+
+!!!! Node tag name 
+
+| ""nodename"" | ""Selects all nodes with the name "nodename""" |
+| card | Selects all nodes with the name "card" |
+
+
+!!!! Current and parent
+
+| . | Selects the current node |
+|..|Selects the parent of the current node |
+
+The following expression shows that ==.== (period) selects the current node.
 
 [[[
 (tree xpath: '.') first == tree
@@ -172,8 +184,15 @@ The following expression shows that period selects the current node.
 ]]]
 
 
+
 !!!! Matching path based children nodes
+
 The operator ==/== selects from the root node.
+
+| ""/"" | ""Selects from the root node""|
+| /cardset | Selects the root element cardset |
+| cardset/card | Selects all the card nodes that are children of cardset |
+
 The following expression selects all the card nodes under cardset node.
 
 [[[
@@ -187,22 +206,49 @@ It is equivalent to the following expression using the ==xpath:== message
 tree xpath: '/cardset/card'
 ]]]
 
-!!!! Matching deep nodes
-Now the ==//== operation selects all the nodes
 
+
+!!!! Matching deep nodes
+
+The ==//== operation selects all the nodes matching the selection.
+
+
+| ""//"" | ""Selects any node from the current node that match the selection"" |
+| //year | Selects all year nodes in all the children of the current node |
+| cardset//year | Selects all year nodes in all the children of the current node |
+
+Let us try with another element such as the expansion of a card. 
 [[[
 tree xpath: '//expansion'
 >>>
 a XPathNodeSet(<expansion>Commander 2014</expansion> <expansion>Avacyn Restored</expansion>)
 ]]]
 
-In Pharo you can also send message to the node. So the previous expression can be expressed as follows:
+In Pharo you can also send message to the node. So the previous expression can be expressed as follows using the message ==//==:
 
 [[[
 tree // 'expansion'
 ]]]
 
 
+
+
+
+!!!! Identifying attributes
+
+==@== match attributes. 
+
+| ""Expression"" |""Description""|
+|@ |Selects attributes|
+|//@lang | Selects all attributes that are named lang|
+ 
+
+
+The following expression returns all the attributes whose name is ==lang==.
+[[[
+(tree xpath: '//@lang') 
+>>>  a XPathNodeSet(lang=""en"" lang=""en"")
+]]]
 
 !!! Glimpse at XPath
 The Pharo XPath packages offers a large API - check the API of the classes ==XMLNode== and ==XMLNodeSets==. 
