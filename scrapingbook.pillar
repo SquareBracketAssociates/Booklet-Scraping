@@ -1,2 +1,3 @@
 
 ${inputFile:Chapters/Scraping.pillar}$
+${inputFile:Chapters/XPath.pillar}$

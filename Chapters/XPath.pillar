@@ -1,0 +1,85 @@
+!! Little Journey into XPath
+
+XPath is the de factor standard language to represent queries to identify nods into an xml structure. 
+
+
+!!! Getting started
+
+You should load the XML parser and XPath library as follows:
+[[[
+Gofer it
+   smalltalkhubUser: 'PharoExtras' project: 'XMLParserHTML';
+   configurationOf: 'XMLParserHTML';
+   loadStable.
+]]]
+
+[[[
+Gofer it
+   smalltalkhubUser: 'PharoExtras' project: 'XPath';
+   configurationOf: 'XPath';
+   loadStable.
+]]]
+
+
+!!! An example
+
+[[[
+	| tree |
+	tree := (XMLDOMParser on: 
+	'<?xml version="1.0" encoding="UTF-8"?>
+
+	<bookstore>
+	  <book>
+	    <title lang="en">Harry Potter</title>
+	    <author>J K. Rowling</author>
+	    <year>2005</year>
+	    <price>29.99</price>
+	  </book>
+	</bookstore>') parseDocument
+]]]
+
+
++.>file://figures/xpath1.png|width=100|label=inspector+
+
+The following elements are nodes:
+[[[
+<bookstore> (root element node)
+
+<author>J K. Rowling</author> (element node)
+
+lang="en" (attribute node)
+]]]
+
+
+Atomic values are nodes with no children or parent. Example of atomic values:
+
+[[[
+J K. Rowling
+
+"en"
+]]]
+
+!!! Tree relationships
+
+
+
+!!! Node selection
+
+
+| ""Expression"" |Description |
+| nodename | Selects all nodes with the name "nodename" |
+|/ |Selects from the root node|
+|// | Selects nodes in the document from the current node that match the selection no matter where they are|
+|. | Selects the current node |
+|..|Selects the parent of the current node|
+|@ |Selects attributes|
+
+| ""Path Expression"" | ""Result""
+|bookstore | Selects all nodes with the name "bookstore"|
+| /bookstore | Selects the root element bookstore |
+| bookstore/book| Selects all book elements that are children of bookstore |
+| //book| Selects all book elements no matter where they are in the document|
+| bookstore//book| Selects all book elements that are descendant of the bookstore element, no matter where they are under the bookstore element|
+//@lang |Selects all attributes that are named lang|
+
+Note: If the path starts with a slash ( / ) it always represents an absolute path to an element!

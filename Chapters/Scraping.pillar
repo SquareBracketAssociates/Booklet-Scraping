@@ -31,13 +31,15 @@ Gofer it
 ]]]
 
 
-!!! Food
+!!! Examples
 Let us take for example the following site 
 *https://ndb.nal.usda.gov/ndb/foods?format=&count=&max=100&sort=&fgcd=&manu=&lfacet=&qlookup=&offset=0&order=desc*.
 
 
 +A possible source of information.>file://figures/food.png|width=100|label=fgmap+
 
+Other web site such as the magic the gathering database can be also nice to scrap.
+*http://gatherer.wizards.com/Pages/Search/Default.aspx?set=[%22Amonkhet%22]*
 
 !!! First cut 
 Let us start. First read in the table of ingredients (first 100 rows only) as in the url. 
@@ -61,6 +63,51 @@ ingredientsXML := (XMLHTMLParser onFileNamed: 'FoodsList.html') parseDocument.
 ]]]
 
 
+!!! Glimpse at XPath
+
+XPath expressions in the context of XMLNodes with optional custom context objects to control evaluation. It supports complete XPath 1.0 syntax with extensions.
+
+Basic usage:
+
+[[[
+	| doc path result context |
+	doc := XMLDOMParser parse: '<test>test contents</test>'.
+	path := XPath for: '/test'.
+	result := path in: doc.
+
+	"with a custom context"
+	path := XPath for: '/*[name() = $name]'.
+	context :=  XPathContext new.
+	context
+		variableAt: 'name'
+		put: 'test'.
+	result :=
+		path
+			in: doc
+			context: context.
+]]]
+
+
+
+XPath expressions can be encoded directly in Pharo using special binary selectors on ==XMLNodes== and  ==XMLNodeSets==:
+
+[[[
+	xmlNode // 'entry' / '*' / 'link' @ 'href'.
+]]]
+
+Block or position predicates can be applied with ?? to axis node test arguments or to result node sets. This returns the first element of each 'entry' descendant:
+
+[[[
+	xmlNode // 'entry' / ('*' ?? 1).
+]]]
+
+The following returns the first (document order) element of the first (document order) 'entry' descendant:
+[[[
+	(xmlNode // 'entry' / '*') ?? 1.
+	xmlNode // 'entry' / '*' ?? 1. "same"
+]]]
+
+!!! Going back to our problem
 
 
 The detail rows are in the body of the table in the second div node whose class is 'wbox'
@@ -100,7 +147,7 @@ ingredientAddress := ingredientRows collect:
 	[ :row| (row xPath:'td[1]/a/@href') first value copyUpTo: $?].
 ]]]
 
-!! Improving the process
+!!! Improving the process
 
 To show how to process the ingredient details, we have just processed the first ingredient in the file. The production version would have to run through all the rows in the ==ingredientAddress== collection.
 
@@ -126,7 +173,7 @@ NeoJSONWriter toStringPretty: factorsJSON.
 ]]]
 
 
-!! Extracting nutrient
+!!! Extracting nutrient
 For this demo, we have just collected the details of the first nutrient group - 'Proximates'. I am not clear what you want the full output to be - do you want to preserve the grouping structure, or just list all nutrients? There may be an easier way of identifying all nutrient rows, other than listing all the possible id strings.
 
 [[[
@@ -151,13 +198,14 @@ NeoJSONWriter toStringPretty: nutrientJSON.
 
 Finally assemble all the information for the first ingredient as a JSON file. NeoJSON automatically takes care of embedding dictionaries within a collection within a dictionary.
 
+[[[
 NeoJSONWriter toStringPretty: 
 	((ingredientsJSON first) 
 		at: 'factors' put: factorsJSON; 
 		at: 'nutrients' put: nutrientJSON; 
 		yourself).
-		
-		
-!! Conclusion 
+]]]
+
+!!! Conclusion 
 
 We presented a way to extract information from structured document. The 
