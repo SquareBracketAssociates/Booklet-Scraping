@@ -1,32 +1,67 @@
 !! Scraping HTML
-Internet pages provide a lot of information and often you would like to be able to access and manipulate it in another form than HTML: HTML is just plain verbose. What you would like is to get access to only the information you are interested in and get the results in a form that you can easily build more software. This is the objectives of HTML scrapping. In Pharo you can scrap web pages using different libraries such as XMLParser and SOUP. 
+
+Internet pages provide a lot of information and often you would like to be able to access and manipulate it in another form than HTML: HTML is just plain verbose. What you would like is to get access to only the information you are interested in and get the results in a form that you can easily build more software. This is the objective of HTML scraping. In Pharo you can scrap web pages using different libraries such as XMLParser and SOUP. 
 In this chappter we will show you how we can do that using XMLParser to scrap and JSON to collect information. 
-This chapter has been originally written by Peter Kenny. 
 
-!! An Example
-
+This chapter has been originally written by Peter Kenny and we thank him for sharing with the community this little tutorial. 
 
 
-!! Getting started
+!!! Getting started
+You can use the Catalog browser to load XMLParserHTML and NeoJSON just execute the following expressions: 
 
-- Load XML packages
-- Load NeoJSON
+[[[
+Gofer it
+   smalltalkhubUser: 'PharoExtras' project: 'XMLParserHTML';
+   configurationOf: 'XMLParserHTML';
+   loadStable.
+]]]
+
+[[[
+Gofer it
+   smalltalkhubUser: 'PharoExtras' project: 'XPath';
+   configurationOf: 'XPath';
+   loadStable.
+]]]
+
+[[[
+Gofer it
+   smalltalkhubUser: 'SvenVanCaekenberghe' project: 'Neo';
+   configurationOf: 'NeoJSON';
+   loadStable.
+]]]
 
 
 !!! Food
-An example 
-https://ndb.nal.usda.gov/ndb/foods?format=&count=&max=100&sort=&fgcd=&manu=&lfacet=&qlookup=&offset=0&order=desc
-
-!! First cut 
+Let us take for example the following site 
+*https://ndb.nal.usda.gov/ndb/foods?format=&count=&max=100&sort=&fgcd=&manu=&lfacet=&qlookup=&offset=0&order=desc*.
 
 
-First read in the table of ingredients (first 100 rows only) as in the spec
++A possible source of information.>file://figures/Food.png|width=100|label=fgmap+
+
+
+!!! First cut 
+Let us start. First read in the table of ingredients (first 100 rows only) as in the url. 
+We use the HTML parser to convert text into an XML tree (a tree whose nodes are XML objects).
 
 [[[
+| ingredientsXML |
 ingredientsXML := XMLHTMLParser parseURL: 'https://ndb.nal.usda.gov/ndb/foods?format=&count=&max=100&sort=&fgcd=&manu=&lfacet=&qlookup=&offset=0&order=desc'.
+ingredientsXML inspect
 ]]]
 
-@@todo propose expression for files
+You can execute the expression and inspect its result. You will obtain an inspector on the tree and you can navigate this tree as shown in Figure *@inspector*. 
+
++Navigating the XML document inside the inspector.>file://figures/InspectorXML.png|width=100|label=inspector+
+
+Since you may want to work on files that you saved on your disc you can also parse a files and get an XML tree as follows:
+
+[[[
+| ingredientsXML |
+ingredientsXML := (XMLHTMLParser onFileNamed: 'FoodsList.html') parseDocument.
+]]]
+
+
+
 
 The detail rows are in the body of the table in the second div node whose class is 'wbox'
 
