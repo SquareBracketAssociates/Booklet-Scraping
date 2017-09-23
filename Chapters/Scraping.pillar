@@ -65,91 +65,51 @@ ingredientsXML := (XMLHTMLParser onFileNamed: 'FoodsList.html') parseDocument.
 
 
 !!! Going back to our problem
-
-
-The detail rows are in the body of the table in the second div node whose class is 'wbox'
+"First read in the table of ingredients (first 100 rows only) as in the spec"
 
 [[[
-ingredientRows :=(ingredientsXML xPath: '//div[@class=''wbox''][2]//tbody/tr').
+ingredientsXML := XMLHTMLParser parseURL: 'https://ndb.nal.usda.gov/ndb/search/list?format=&count=&max=50&sort=fd_s&fgcd=&manu=&lfacet=&qlookup=&ds=Standard+Reference&qt=&qp=&qa=&qn=&q=&ing=&offset=0&order=asc'.
 ]]]
 
-Extract the text content of the three cells in each row
+"The detail rows are in the body of the table in the div node whose class is 'wbox'"
 
+[[[
+ingredientRows :=(ingredientsXML xPath: '//div[@class=''wbox'']//tbody/tr').
+]]]
+ 
+"Extract the text content of the four cells in each row"
 [[[
 ingredientCells := ingredientRows collect: 
-	[:row| (row xPath: 'td') collect: 
-		[ :cell| cell  contentString]].
+               [:row| (row xPath: 'td') collect: 
+                              [ :cell| cell  contentString trim]].
 ]]]
 
-
-To prepare for export to JSON, it is handy to put the three fields in a Dictionary indexed by their field names
+"To prepare for export to JSON, it is handy to put the three required fields (ignoring the first) in a Dictionary indexed by their field names"
 
 [[[
 ingredientsJSON := ingredientCells collect: 
-	[ :row| { 'nbd_no' -> (row at: 1). 
-				'full-name' -> (row at: 2). 
-				'food-group' -> (row at: 3)} asDictionary ].
+               [ :row| { 'nbd_no' -> (row at: 2). 
+                              'full-name' -> (row at: 3). 
+                              'food-group' -> (row at: 4)} 
+asOrderedDictionary ].
 ]]]
-
-If we 'do it and go' this line, we can see the JSON layout. In this demo, I have not bothered with exporting to a JSON file; it is easier to look at it in a Playground.
+ 
+"If we 'do it and go' this line, we can see the JSON layout. In this demo, I have not bothered with exporting to a JSON file; it is easier to look at it in a Playground"
 
 [[[
-neoJSONWriter toStringPretty: ingredientsJSON first.
+NeoJSONWriter toStringPretty: ingredientsJSON first.
 ]]]
 
-We can find the address of the ingredient details from the href in the first cell
-
+"We can find the address of the ingredient details from the href in the second cell"
 [[[
 ingredientAddress := ingredientRows collect: 
-	[ :row| (row xPath:'td[1]/a/@href') first value copyUpTo: $?].
+               [ :row| (row xPath:'td[2]/a/@href') first value copyUpTo: $?].
 ]]]
 
-!!! Improving the process
-
-To show how to process the ingredient details, we have just processed the first ingredient in the file. The production version would have to run through all the rows in the ==ingredientAddress== collection.
+"To show how to process the ingredient details, I have just processed the first ingredient in the file. The production version would have to run through all the rows in the ingredientAddress collection. We read and parse the detail file."
 
 [[[
-ingredientDetailsXML := XMLHTMLParser parseURL: 'https://ndb.nal.usda.gov',ingredientAddress first,'?format=Full'.
-]]]
-
-The ingredient factors (if any) are found in the second div node within the div whose class is =='dialog'==. We do not need to worry about the case of zero factors; if XPath fails to find a match, it returns an empty results collection without complaint.
-
-[[[
-ingredientFactors := (ingredientDetailsXML xPath: '//div[@class =''dialog'']/div[2]/span') collect: 	[:cell| cell contentString trim].
-]]]
-
-
-Again we prepare for JSON export by forming a dictionary
-
-[[[
-factorsJSON := Dictionary new.
-1 to: ingredientFactors size by: 2 do: 
-	[ :index| factorsJSON at: (ingredientFactors at: index) put: (ingredientFactors at: index + 1) ]
-
-NeoJSONWriter toStringPretty: factorsJSON.
-]]]
-
-
-!!! Extracting nutrient
-For this demo, we have just collected the details of the first nutrient group - 'Proximates'. I am not clear what you want the full output to be - do you want to preserve the grouping structure, or just list all nutrients? There may be an easier way of identifying all nutrient rows, other than listing all the possible id strings.
-
-[[[
-nutrientDetails := (ingredientDetailsXML xPath: '//tr[@id=''Proximates-0'']') collect: 
-	[ :row | ((row xPath: 'td') first: 3) collect: 
-		[ :cell |cell contentString trim ] ].
-]]]
-
-Note that the text content has to be trimmed, because the text in the XML file contains a lot of leading white spaces. I'm not sure if this is in the original web page, or if it is an artefact of the ==XMLHTMLParser==.
-
-Again we form a dictionary for each row. The collection of nutrient dictionaries will later be embedded in the ingredient dictionary.
-
-[[[
-nutrientJSON := nutrientDetails collect: 
-	[ :row| { 'nutrient'-> (row at: 1). 
-				'unit'-> (row at: 2). 
-				'per100g' -> (row at: 3) } asDictionary ].
-
-NeoJSONWriter toStringPretty: nutrientJSON.
+ingredientDetailsXML := XMLHTMLParser parseURL: 'https://ndb.nal.usda.gov', ingredientAddress first, '?format=Full'.
 ]]]
 
 
