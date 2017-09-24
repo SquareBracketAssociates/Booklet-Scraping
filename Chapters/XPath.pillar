@@ -213,9 +213,9 @@ tree xpath: '/cardset/card'
 The ==//== operation selects all the nodes matching the selection.
 
 
-| ""//"" | ""Selects any node from the current node that match the selection"" |
+| ""//"" | ""Selects any node from the current node "" |
 | //year | Selects all year nodes in all the children of the current node |
-| cardset//year | Selects all year nodes that are descendant of the cardset element |
+| cardset//year | Selects all year nodes that are descendant of cardset |
 
 Let us try with another element such as the expansion of a card. 
 [[[
@@ -228,12 +228,14 @@ In Pharo you can also send message to the node. So the previous expression can b
 
 [[[
 tree // 'expansion'
+>>>
+a XPathNodeSet(<expansion>Commander 2014</expansion> <expansion>Avacyn Restored</expansion>)
 ]]]
 
 
 !!!! Identifying attributes
 
-==@== match attributes. 
+==@== matches attributes. 
 
 | ""Expression"" |""Description""|
 |@ |Selects attributes|
@@ -249,51 +251,216 @@ The following expression returns all the attributes whose name is ==lang==.
 
 
 
+!!! Predicates
 
+Predicates are used to find a specific node or a node that contains a specific value. Predicates are always embedded in square brackets.
 
+Let us study some examples:
 
-!!! Glimpse at XPath to be rewritten
+!!!! First element
 
-The Pharo XPath packages offers a large API - check the API of the classes ==XMLNode== and ==XMLNodeSets==. 
-It supports XPath expressions in the context of XMLNodes with optional custom context objects to control evaluation. 
-It supports complete XPath 1.0 syntax with extensions.
+The following expression selects the first card child of the cardset element.
+[[[
+tree xpath: '/cardset/card[1]'
+>>>
+a XPathNodeSet(<card>
+    <cardname lang=""en"">Arcane Lighthouse</cardname>
+    <types>Land</types>
+    <year>2014</year>
+    <rarity>Uncommon</rarity>
+    <expansion>Commander 2014</expansion>
+    <cardtext>Tap: Add 1 uncolor to you mana pool. 
+	1 uncolor + Tap: Until end of turn, creatures your opponents
+	 control lose hexproof and shroud and can't have 
+	 hexproof or shroud.</cardtext>
+  </card>)
+]]]
 
-Basic usage:
+In the XPath Pharo implementation the message ==??== can be used for position or block predicates.
+
+the previous expression is equivalent to the following one
 
 [[[
-	| doc path result context |
-	doc := XMLDOMParser parse: '<test>test contents</test>'.
-	path := XPath for: '/test'.
-	result := path in: doc.
-
-	"with a custom context"
-	path := XPath for: '/*[name() = $name]'.
-	context :=  XPathContext new.
-	context
-		variableAt: 'name'
-		put: 'test'.
-	result :=
-		path
-			in: doc
-			context: context.
+tree / 'cardset' /'card' ?? 1 .
 ]]]
 
 
+Block or position predicates can be applied with ==??== to axis node test arguments or to result node sets. 
 
-XPath expressions can be encoded directly in Pharo using special binary selectors on ==XMLNodes== and  ==XMLNodeSets==:
-
-[[[
-	xmlNode // 'entry' / '*' / 'link' @ 'href'.
-]]]
-
-Block or position predicates can be applied with ==??== to axis node test arguments or to result node sets. This returns the first element of each 'entry' descendant:
+The following expression returns the first element of each 'card' descendant:
 
 [[[
-	xmlNode // 'entry' / ('*' ?? 1).
+tree // 'card' / ('*' ?? 1)
+>>> "a XPathNodeSet(<cardname lang=""en"">Arcane Lighthouse</cardname> <cardname lang=""en"">Desolate Lighthouse</cardname>)"
 ]]]
 
-The following returns the first (document order) element of the first (document order) 'entry' descendant:
+!!!! Other position functions
+
+The following expression selects the last card node that is the child of the cardset node.
+
 [[[
-	(xmlNode // 'entry' / '*') ?? 1.
-	xmlNode // 'entry' / '*' ?? 1. "same"
+tree xpath: '/cardset/card[last()]'.
 ]]]
+
+The following selects the last but one node, in our case since we only have two elements we get the first. 
+
+[[[
+tree xpath: '/cardset/card[last()-1]'.
+>>>
+a XPathNodeSet(<card>
+	    <cardname lang=""en"">Arcane Lighthouse</cardname>
+	    <types>Land</types>
+	    <year>2014</year>
+	    <rarity>Uncommon</rarity>
+	    <expansion>Commander 2014</expansion>
+	    <cardtext>Tap: Add 1 uncolor to you mana pool. 
+		1 uncolor + Tap: Until end of turn, creatures your opponents
+		 control lose hexproof and shroud and can't have 
+		 hexproof or shroud.</cardtext>
+	  </card>)
+]]]
+
+We can also use the position function and use it to identify nodes. The following selects the first two card nodes that are children of the cardset node. 
+
+[[[
+(tree xpath: '/cardset/card[position()<3]') size = 2
+>>> true
+]]]
+
+
+!!!! Selecting based on node value
+
+In addition we can select nodes based on a value of a node. The following query selects all the card nodes (of the cardset) that have a year greater than 2014.
+
+[[[
+tree xpath: '/cardset/card[year>2013]'.
+]]]
+
+The following query selects all the cardname nodes of the card children of cardset that have a year greater than 2014.
+
+[[[
+/cardset/card[year>2013]/cardname
+>>> a XPathNodeSet(<cardname lang=""en"">Arcane Lighthouse</cardname>)
+]]]
+
+!!!! Selecting nodes based on attribute value
+
+We can also select nodes based on the existence or value of an attribute.
+The following expression returns the cardname that have the lang attribute and whose value is 'en'.
+[[[
+tree xpath: '//cardname[@lang]
+>>> a XPathNodeSet(<cardname lang=""en"">Arcane Lighthouse</cardname> <cardname lang=""en"">Desolate Lighthouse</cardname>)
+tree xpath: '//cardname[@lang='en']
+]]]
+
+Note that we can simply get the card from the name using '..'.
+
+[[[
+tree xpath: '//cardname[@lang='en']/..
+>>>
+]]]
+
+!!! Selecting Unknown Nodes
+
+In addition we can use wildcard to select any node. 
+
+| ""Wildcard""| ""Description""
+|* |Matches any element node|
+|@* |Matches any attribute node|
+|node() | Matches any node of any kind|
+
+For example ==//*== selects all elements in a document. 
+
+[[[
+(tree xpath: '//*') size
+>>> 15
+]]]
+
+While ==//@*== selects all the attributes of any node. 
+
+[[[
+tree xpath: '//@*'
+>>> a XPathNodeSet(lang=""en"" lang=""en"")
+
+]]]
+
+For example ==//cardname[@*]== selects all cardname elements which have at least one attribute of any kind.
+[[[
+tree xpath: '//cardname[@*]'
+>>> a XPathNodeSet(<cardname lang=""en"">Arcane Lighthouse</cardname> <cardname lang=""en"">Desolate Lighthouse</cardname>)
+]]]
+The following expression selects all child nodes of cardset.
+[[[
+tree xpath: '/cardset/*'.
+]]]
+
+The following expression selects all the cardname of all the child nodes of cardset. 
+[[[
+tree xpath: '/cardset/*/cardname'.
+]]]
+
+!!! Handling multiple queries
+
+By using the ==|== operator in an XPath expression you can select several paths.
+The following expression selects both the cardname and year of card nodes located anywhere in the document. 
+
+[[[
+tree xpath: '//card/cardname | //card//year'
+>>> a XPathNodeSet(<cardname lang=""en"">Arcane Lighthouse</cardname> <year>2014</year> 
+<cardname lang=""en"">Desolate Lighthouse</cardname> <year>2013</year>)"
+]]]
+
+!!! XPath axes
+
+Xpath introduces another way to select nodes using ''location step'' following the syntax: ==axisname::nodetest[predicate]==.
+Such expressions can be used in the steps of location paths (see below). 
+
+An axis defines a node-set relative to the current node. Here is a table of the available axes. 
+
+|""AxisName""| ""Result""
+|ancestor | Selects all current node ancestors
+|ancestor-or-self |... and the current node itself
+|attribute |Selects all current node attributes
+|child |Selects all current node children 
+|descendant | Selects all current node descendants 
+|descendant-or-self |... and the current node itself
+|following |Selects everything after the current node closing tag
+|following-sibling |Selects all siblings after the current node
+|namespace | Selects all current node namespace nodes
+|parent | Selects current node parent
+|preceding |Selects all nodes that appear before the current node
+| | except ancestors, attribute nodes and namespace nodes
+|preceding-sibling | Selects all siblings before the current node
+|self | Selects the current node
+
+
+!!!! Paths 
+
+A location path can be absolute or relative. An absolute location path starts with a slash ( / ) (/step/step/...) and a relative location path does not (step/step/...). In both cases the location path consists of one or more location steps, each separated by a slash.
+
+Each step is evaluated against the nodes in the current node-set.
+A location step, ==axisname::nodetest[predicate]==,  consists of:
+- an axis (defines the tree-relationship between the selected nodes and the current node)
+- a node-test (identifies a node within an axis)
+- zero or more predicates (to further refine the selected node-set)
+
+The following example access the year node of all the children of the cardset. 
+[[[
+tree xpath: '/cardset/child::node()/year').
+>>>a XPathNodeSet(<year>2014</year> <year>2013</year>)
+]]]
+
+The following expression gets the ancestor of the year node and selects the cardname.
+[[[
+(tree xpath: '/cardset/card/year') first  xpath: 'ancestor::card/cardname'
+>>> "a XPathNodeSet(<cardname lang=""en"">Arcane Lighthouse</cardname>)"
+]]]
+
+!!! Conclusion
+
+XPath is a powerful language and the Pharo XPath library developed and maintained by Monty Kamath is implementing the full standard 1.0. 
+In addition coupled with life programming capabilities of Pharo it gives a really powerful to explore structured data. 
+
+
+
+
