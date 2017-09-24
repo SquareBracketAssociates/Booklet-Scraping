@@ -2,15 +2,15 @@
 
 In this chapter we will scrap the web site of Magic the gathering and in particular the card database. (Yes I play Magic not super good but well I have fun). 
 Here is one example *http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430*  as shown in Figure *@ligthouse2*.
-Now we will try to show how we explore the HTML using the excellent Pharo inspector: diving in the tree nodes and checking live their attributes or children is simply super cool.
+Now we will try to show you how we explore the HTML page using the excellent Pharo inspector: diving in the tree nodes and checking live their attributes or children is simply super cool.
 
 
++http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430.>file://figures/arcane.png|width=80|label=ligthouse2+
 
-!!! First the visual 
+!!! Getting a tree
 
-First we would like to grab the visual because this is fun and cool. 
-
-+http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430.>file://figures/arcane.png|width=100|label=ligthouse2+
+The first thing was to make sure that we can get a tree from the web page. For this task we used the ==XMLHTMLParser== class and sends it the message ==parseURL:==. How did we find this message... Simply looking on the class side methods of the class. 
+How did we find the class, well looking at the subclass of ==XMLDOMParser== because HTML is close to XML or the inverse :).  
 
 [[[
 | tree |
@@ -18,9 +18,13 @@ tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details
 ]]]	
 
 
-!!! Toying with images
 
-+Exploring images.>file://figures/magic1.png|width=100|label=image0+
+!!! First the card visual 
+
+First we would like to grab the card visual because this is fun and cool. When we open the card visual in a separate window we see that the url is *http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=389430&type=card*. Therefore we started to look for Handlers in the nodes as shown in Figure *@image0*.
+
+
++Exploring images.>file://figures/magic1.png|width=80|label=image0+
 
 [[[
 | tree |
@@ -28,8 +32,6 @@ tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details
 tree xpath: '//img'	
 ]]]
 
-
-When we open the card visual in a separate window we see that the url is *http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=389430&type=card*. Therefore we started to look for Handlers in the nodes as shown in Figure *@image0*.
 
 
 !!!! No so cool but working... 
@@ -43,21 +45,31 @@ tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details
 >>> 'Handlers/Image.ashx?multiverseid=389430&type=card'
 ]]]
 
+Ugly isn't it? This happens often when scraping HTML, but we can do better. 
+By the way note also that we start to enter directly XPath command using the XPath pane and using the doit and go facilities of the inspector. 
+This way we do not have to get the page from internet all the time. 
+
+
 !!! Revisiting it
 
 We could not really show you such ugly expressions so we had to find a better one.
 
+So first we look at the img that has src as atttribute as shown below and in Figure *@image1*.
 [[[
 | tree |
 tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430').
 (tree xpath: '//img[@src]')
 ]]]
 
-+Exploring images.>file://figures/magic2.png|width=100|label=image1+
++Exploring images.>file://figures/magic2.png|width=80|label=image1+
 
-+Exploring images.>file://figures/magic3.png|width=100|label=image2+
+Then as shown in Figure *@image2* we inspected the right node.
+ 
++Narrowing the node.>file://figures/magic3.png|width=80|label=image2+
 
-+Exploring images.>file://figures/magic4.png|width=100|label=image3+
+Finally since we were on this exact node, we looked in its class to see if we could get an API to get the attribute in a nice way as shown in Figure *@image3*.
+
++Exploring the class API on the spot: looking to see if there is a attribute something method.>file://figures/magic4.png|width=80|label=image3+
 
 [[[
 | tree |
@@ -65,7 +77,8 @@ tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details
 (tree xpath: '//img[@src]') third attributeAt: 'src'
 ]]]
 
-Now that we have the visual
+Now that we have the visual path, we can use the HTTP client of Pharo to get the image as shown in Figure *@zinc*.
+
 [[[
 | tree path |
 tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430').
@@ -73,7 +86,7 @@ path := ((tree xpath: '//img[@src]')	third attributeAt: 'src') allButFirst: 5.
 (ZnEasy getJpeg: 'http://gatherer.wizards.com/',path) asMorph openInWorld
 ]]]
 
-+Getting the card visual.>file://figures/magic5.png|width=100|label=image+
++Getting the card visual inside Pharo.>file://figures/magic5.png|width=100|label=zinc+
 
 !!! Getting data
 
@@ -93,14 +106,17 @@ This one is more interesting:
      <a href="/Pages/Search/Default.aspx?action=advanced&amp;artist=[%22Igor Kieryluk%22]">Igor Kieryluk</a></div>
 ]]]
 
-
-
-We can build queries to identify node elements having this id. 
+We can build queries to identify node elements having this id.
 To avoid to perform an internet request each time, we typed directly XPath path in the XPath pane of the inspector as shown in Figure *@row*.
-Now trying to get faster we looked at all the class="row"
+Now trying to get faster we looked at all the class="row" as shown in Figure *@row*
 
 [[[
 //div[@class='row']
 ]]]
 
-+Getting the card visual.>file://figures/magic6.png|width=100|label=row+
++Getting the card visual.>file://figures/magic6.png|width=80|label=row+
+
+
+!! Conclusion
+
+We show you how we could access the page and navigate interactively through it using XPath and live programming feature of Pharo. 
