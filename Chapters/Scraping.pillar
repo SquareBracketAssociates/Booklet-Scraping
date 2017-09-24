@@ -38,8 +38,7 @@ Let us take for example the following site
 
 +A possible source of information.>file://figures/food.png|width=100|label=fgmap+
 
-Other web site such as the magic the gathering database can be also nice to scrap.
-*http://gatherer.wizards.com/Pages/Search/Default.aspx?set=[%22Amonkhet%22]*
+
 
 !!! First cut 
 Let us start. First read in the table of ingredients (first 100 rows only) as in the url. 
