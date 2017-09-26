@@ -114,9 +114,66 @@ Now trying to get faster we looked at all the class="row" as shown in Figure *@r
 //div[@class='row']
 ]]]
 
-+Getting the card visual.>file://figures/magic6.png|width=80|label=row+
++Getting the card information.>file://figures/magic6.png|width=80|label=row+
 
+The following expression returns the pair label and value for example for the card name label and its value.
+
+[[[
+//div[@class='row']/div[@class='label']| //div[@class='row']/div[@class='value']
+]]]
+
+So we can now query all the fields
+
+[[[
+| tree |
+tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430').
+container := tree xpath: '//div[@class=''row'']/div[@class=''label'']| //div[@class=''row'']/div[@class=''value'']'.
+container collect: [ :each | each contentString trimBoth  ].
+>>> a XMLOrderedList('Card Name:' 'Arcane Lighthouse' 'Types:' 'Land' 'Card Text:' 
+': Add  to your mana pool. , : Until end of turn, creatures your opponents control 
+lose hexproof and shroud and can''t have hexproof or shroud.' 
+'Expansion:' 'Commander 2014' 'Rarity:' 'Uncommon' 'Card Number:' '59' 'Artist:' 'Igor Kieryluk')
+]]]
+
+Now we can convert this into a dictionary 
+
+[[[
+| tree  |
+tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430').
+container := tree xpath: '//div[@class=''row'']/div[@class=''label'']| //div[@class=''row'']/div[@class=''value'']'.
+((container collect: [ :each | each contentString trimBoth  ])
+	asOrderedCollection groupsOf: 2 atATimeCollect: [ :x :y | x -> y]) asDictionary
+]]]
+
+
+And convert it into JSON for fun
+
+[[[
+| tree dict |
+tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430').
+container := tree xpath: '//div[@class=''row'']/div[@class=''label'']| //div[@class=''row'']/div[@class=''value'']'.
+dict := ((container collect: [ :each | each contentString trimBoth  ])
+	asOrderedCollection groupsOf: 2 atATimeCollect: [ :x :y | x -> y]) asDictionary.
+	
+NeoJSONWriter toStringPretty:dict
+>>>	
+
+'{
+	"Card Number:" : "59",
+	"Card Name:" : "Arcane Lighthouse",
+	"Artist:" : "Igor Kieryluk",
+	"Types:" : "Land",
+	"Card Text:" : ": Add  to your mana pool. , : Until end of turn, creatures your opponents control lose
+	 hexproof and shroud and can''t have hexproof or shroud.",
+	"Expansion:" : "Commander 2014",
+	"Rarity:" : "Uncommon"
+}'
+]]]
+
+Now we can apply the same technique to access all the cards and also different pages to extract all the card unique id and query the database. 
+But this is left as an exercise.
 
 !! Conclusion
 
-We show you how we could access the page and navigate interactively through it using XPath and live programming feature of Pharo. 
+We show you how we could access the page and navigate interactively through it using XPath and live programming feature of Pharo.
+This chapter should show the great value to be able to tweak you live a document and navigate to find the information you really want.
