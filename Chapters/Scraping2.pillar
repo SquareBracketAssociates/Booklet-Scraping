@@ -173,7 +173,7 @@ NeoJSONWriter toStringPretty:dict
 Now we can apply the same technique to access all the cards and also different pages to extract all the card unique id and query the database. 
 But this is left as an exercise.
 
-!! Conclusion
+!!! Conclusion
 
 We show you how we could access the page and navigate interactively through it using XPath and live programming feature of Pharo.
 This chapter should show the great value to be able to tweak you live a document and navigate to find the information you really want.
