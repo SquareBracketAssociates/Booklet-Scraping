@@ -1,3 +1,15 @@
+
+I came with the idea of this booklet thank to Peter that kindly answered a question on the Pharo mailing-list. 
+To help Peter showed to a Pharoer how to scrap the web site mentioned in Chapter 2 using XPath. In addition, some years ago 
+I was maintaining Soup a scraping framework because I want to write an application to manage my magic cards.
+Since then I always wanted to try XPath and in addition I wanted to offer this booklet to Peter. Why because I asked Peter 
+if he would like to write something and he told that he was at a great age where he would not take any commitment. 
+I realised that I would like to get as old as him and be able to hack like a mad in Pharo with new technology. 
+So this booklet is a gift to Peter, a great and gentle Pharoer.
+
+Stef
+
+
 ${inputFile:Chapters/XPath.pillar}$
 ${inputFile:Chapters/Scraping.pillar}$
 ${inputFile:Chapters/Scraping2.pillar}$
