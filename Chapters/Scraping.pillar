@@ -33,7 +33,7 @@ Gofer it
 
 
 !!! Define the Problem
-This tutorial is based on a real life problem described by Bernardo Ezequiel Contreras. We need to consult a database published by the US Department of Agriculture, extract data for over 8000 food ingredients and their nutrient contents and output the results as a JSON file. The main list of ingredients can be found at the following url: *https://ndb.nal.usda.gov/ndb/search/list?sort=ndb&ds=Standard+Reference* (as shown in Figure *@figfood*). You can aslo find the HTML version of the file in the github repository of this book *https://github.com/SquareBracketAssociates/Booklet-Scraping/resources*.
+This tutorial is based on a real life problem described by Bernardo Ezequiel Contreras. We need to consult a database published by the US Department of Agriculture, extract data for over 8000 food ingredients and their nutrient contents and output the results as a JSON file. The main list of ingredients can be found at the following url: *https://ndb.nal.usda.gov/ndb/search/list?sort=ndb&ds=Standard+Reference* (as shown in Figure *@figfood*). You can also find the HTML version of the file in the github repository of this book *https://github.com/SquareBracketAssociates/Booklet-Scraping/resources*.
 
 +Food list.>file://figures/food.png|width=100|label=figfood+
 
