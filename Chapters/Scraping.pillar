@@ -41,20 +41,17 @@ This table shows the first 50 rows, each corresponding to an ingredient. The tab
 *https://ndb.nal.usda.gov/ndb/foods/show/1?format=Full* (as shown in Figure *@figfood2*).
 
 
-+Salted Butter.>file://figures/food2.png|width=100|label=figfood2+
++Food details - Salted Butter.>file://figures/food2.png|width=100|label=figfood2+
 
 
-There are two area of information that need to be extracted from this detailed table:
+There are two areas of information that need to be extracted from this detailed table:
 - There is a row of special factors, in this case beginning with 'Carbohydrate Factor: 3.87'. This is to be extracted as a set of (name, value) pairs. The number of factors can vary; some ingredients do not have any.
 - There is a table of data for various nutrients, which are arranged in groups - proximates, vitamins, lipids etc. The number of columns in the table varies from one ingredient to another, but in every case the first three columns are nutrient name, unit of measurement and quantity; we have to extract these columns for every listed nutrient.
 
 The requirement is to extract all this information for each ingredient, and then output it as a JSON file:
-
-[[[
-	NBD number, description and food group from the main list;
-	Factor names and values from the detailed table;
-	Nutrient details from the detailed table.
-]]]
+- NBD number, description and food group from the main list;
+- Factor names and values from the detailed table;
+- Nutrient details from the detailed table.
 
 
 !!! First find the required data
@@ -139,7 +136,7 @@ Up to this point, we have been constructing lists with data for all 50 ingredien
 ingredientDetailsXML := XMLHTMLParser parseURL: 'https://ndb.nal.usda.gov', ingredientAddress first, '?format=Full'.
 ]]]
 
-The data for the factors are contained in <span> nodes within ==<div class="row">== nodes. This does not identify them uniquely, so we extract all such nodes with XPath and then use ordinary Smalltalk to find the ones mentioning the word 'Factor'.
+The data for the factors are contained in ==<span>== nodes within ==<div class="row">== nodes. This does not identify them uniquely, so we extract all such nodes with XPath and then use ordinary Smalltalk to find the ones mentioning the word 'Factor'.
 
 [[[
 factorCells := (ingredientDetailsXML xPath: '//div[@class=''row'']//span') 
@@ -172,7 +169,7 @@ nutrients := OrderedCollection new.
 	asOrderedDictionary ].
 ]]]
 
-Finally assemble all the information for the first ingredient as a JSON file. NeoJSON automatically takes care of embedding dictionaries within a collection within a dictionary.
+Finally assemble all the information for the first ingredient as a JSON file. NeoJSON automatically takes care of embedding dictionaries within a collection within a dictionary. (See specimen in Figure *@jsonspec*)
 
 [[[
 NeoJSONWriter toStringPretty: 
@@ -181,6 +178,8 @@ NeoJSONWriter toStringPretty:
 		at: 'nutrients' put: nutrients asArray; 
 		yourself).
 ]]]
+
++Sample of JSON output.>file://figures/JSON_sample.png|width=100|label=jsonspec+
 
 !!! Turning the pages
 The code above will extract the data for one ingredient, and could obviously be repeated for all the 50 items in one page of data. However, the entire database contains 8789 ingredients at the time of writing, which amounts to 176 pages. The database seems to impose a limit of 50 ingredients per page, so to process the entire database we need to read the pages in succession. Each page contains a link which, if clicked, will load the next page. We can do this programmatically, by finding the link after processing the page. The link is contained in node ==<div class="paginateButtons">==, so we can use the code:
