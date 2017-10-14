@@ -174,20 +174,26 @@ The following table shows the XPath expressions. Often the current node is also 
 
 
 In the following we expect that the variable ==tree== is bound the full document tree we previously created parsing the XML string.
-In Pharo expressions selecting nodes returns set of nodes. Now let us play with the system to really see how it works. 
+Location path expressions return node sets, which are empty if no nodes match. Now let us play with the system to really see how it works.
 
-!!!! Node tag name 
+!!!! Node tag name selection
 
-| ""nodename"" | ""Selects all nodes with the name "nodename""" |
-| card | Selects all nodes with the name "card" |
+There are several way to test and select nodes.
 
+| ""nodename"" | Selects all chile nodes with the name "nodename" |
+| card | Selects all child nodes with the name "card" |
+| ""prefix:localName"" | Selects all child nodes with the qualified name "prefix:localName", or if at least one prefix/namespace URI pair was declared in the XPathContext, the child nodes with the local name "localName" and the namespace URI bound to "prefix"|
 
-!!!! Current and parent
+In standard XPath, qualified name tests like prefix:localName select nodes with the same local name and the namespace URI of the prefix, which must be declared in the controlling XPath context prior to evaluation. The selected nodes from the document can have different prefixes (or none at all), because matching is based on local name and namespace URI.
 
-| . | Selects the current node |
-|..|Selects the parent of the current node |
+To simplify things, the Pharo XPath library (unlike others) by default matches qualified name tests against the literal qualified names of nodes, ignoring namespace URIs completely, and does not require you to pre-declare namespace prefix/URI pairs in the XPathContext object before evaluation. Declaring at least one namespace prefix/URI pair will trigger standard behavior, where all prefixes used in qualified name tests must be pre-declared, and matching will be done based on local names and namespace URIs.
 
-The following expression shows that ==.== (period) selects the current node.
+!!!! Context and parent
+
+| . | Selects the current context node |
+|..|Selects the parent of the current context node |
+
+The following expression shows that ==.== (period) selects the context node, initially the node XPath evaluation begins in.
 
 [[[
 (tree xpath: '.') first == tree
@@ -196,13 +202,13 @@ The following expression shows that ==.== (period) selects the current node.
 
 
 
-!!!! Matching path based children nodes
+!!!! Matching path-based child nodes
 
 The operator ==/== selects from the root node.
 
 | ""/"" | ""Selects from the root node""|
 | /cardset | Selects the root element cardset |
-| cardset/card | Selects all the card nodes that are children of cardset |
+| cardset/card | Selects all the card grandchildren from the cardset children of the context node |
 
 The following expression selects all the card nodes under cardset node.
 
@@ -211,7 +217,7 @@ path := XPath for: '/cardset/card'.
 path in: tree.
 ]]]
 
-It is equivalent to the following expression using the ==xpath:== message
+==XPath== objects lazily compile their source to an executable form the first time they're evaluated, and the compiled form and its source are cached globally, so caching the ==XPath== object itself in a variable is normally unecessary to avoid recompilation and is only slightly faster. The previous expression is equivalent to the following expression using the ==xpath:== message.
 
 [[[
 tree xpath: '/cardset/card'
@@ -224,9 +230,9 @@ tree xpath: '/cardset/card'
 The ==//== operation selects all the nodes matching the selection.
 
 
-| ""//"" | ""Selects any node from the current node "" |
-| //year | Selects all year nodes in all the children of the current node |
-| cardset//year | Selects all year nodes that are descendant of cardset |
+| ""//"" | Selects from the context (current) node and all descendants |
+| //year |Selects all year node children of the context node and of its descendants |
+| cardset//year | Selects all year node children of the cardset context node children and their descendants |
 
 Let us try with another element such as the expansion of a card. 
 [[[
@@ -235,7 +241,7 @@ tree xpath: '//expansion'
 a XPathNodeSet(<expansion>Commander 2014</expansion> <expansion>Avacyn Restored</expansion>)
 ]]]
 
-In Pharo you can also send message to the node. So the previous expression can be expressed as follows using the message ==//==:
+The XPath library extends ==XMLNode== classes with binary selectors to encode certain XPath expressions directly in Pharo. So the previous expression can be expressed as follows using the message ==//==:
 
 [[[
 tree // 'expansion'
@@ -287,12 +293,12 @@ a XPathNodeSet(<card>
   </card>)
 ]]]
 
-In the XPath Pharo implementation the message ==??== can be used for position or block predicates.
+In the XPath Pharo implementation, the message ==??== can be used for position or block predicates.
 
 the previous expression is equivalent to the following one
 
 [[[
-tree / 'cardset' /'card' ?? 1 .
+tree / 'cardset' / ('card' ?? 1) .
 ]]]
 
 
@@ -313,7 +319,7 @@ The following expression selects the last card node that is the child of the car
 tree xpath: '/cardset/card[last()]'.
 ]]]
 
-The following selects the last but one node, in our case since we only have two elements we get the first. 
+The following selects the second to last node. In our case since we only have two elements we get the first. 
 
 [[[
 tree xpath: '/cardset/card[last()-1]'.
@@ -412,7 +418,7 @@ tree xpath: '/cardset/*/cardname'.
 
 !!! Handling multiple queries
 
-By using the ==|== operator in an XPath expression you can select several paths.
+By using the ==|== union operator in an XPath expression you can select several paths.
 The following expression selects both the cardname and year of card nodes located anywhere in the document. 
 
 [[[
@@ -423,35 +429,36 @@ tree xpath: '//card/cardname | //card//year'
 
 !!! XPath axes
 
-Xpath introduces another way to select nodes using ''location step'' following the syntax: ==axisname::nodetest[predicate]==.
+XPath introduces another way to select nodes using ''location step'' following the syntax: ==axisname::nodetest[predicate]==.
 Such expressions can be used in the steps of location paths (see below). 
 
-An axis defines a node-set relative to the current node. Here is a table of the available axes. 
+An axis defines a node-set relative to the context (current) node. Here is a table of the available axes. 
+Except for the namespace axis, all of these have binary selector equivalents.
 
 |""AxisName""| ""Result""
-|ancestor | Selects all current node ancestors
-|ancestor-or-self |... and the current node itself
-|attribute |Selects all current node attributes
-|child |Selects all current node children 
-|descendant | Selects all current node descendants 
-|descendant-or-self |... and the current node itself
-|following |Selects everything after the current node closing tag
-|following-sibling |Selects all siblings after the current node
-|namespace | Selects all current node namespace nodes
-|parent | Selects current node parent
-|preceding |Selects all nodes that appear before the current node
+|ancestor | Selects all context (current) node ancestors
+|ancestor-or-self |... and the context node itself
+|attribute |Selects all context (current) node attributes
+|child |Selects all context (current) node children 
+|descendant | Selects all context node descendants 
+|descendant-or-self |... and the context node itself
+|following |Selects everything after the context node closing tag
+|following-sibling |Selects all siblings after the context node
+|namespace | Selects all context node namespace nodes
+|parent | Selects context node parent
+|preceding |Selects all nodes that appear before the context node
 | | except ancestors, attribute nodes and namespace nodes
-|preceding-sibling | Selects all siblings before the current node
-|self | Selects the current node
+|preceding-sibling | Selects all siblings before the context node
+|self | Selects the context node
 
 
 !!!! Paths 
 
 A location path can be absolute or relative. An absolute location path starts with a slash ( / ) (/step/step/...) and a relative location path does not (step/step/...). In both cases the location path consists of one or more location steps, each separated by a slash.
 
-Each step is evaluated against the nodes in the current node-set.
+Each step is evaluated against the nodes in the context node-set.
 A location step, ==axisname::nodetest[predicate]==,  consists of:
-- an axis (defines the tree-relationship between the selected nodes and the current node)
+- an axis (defines the tree-relationship between the selected nodes and the context node)
 - a node-test (identifies a node within an axis)
 - zero or more predicates (to further refine the selected node-set)
 
@@ -467,10 +474,20 @@ The following expression gets the ancestor of the year node and selects the card
 >>> "a XPathNodeSet(<cardname lang=""en"">Arcane Lighthouse</cardname>)"
 ]]]
 
+The previous expression could be rewritten using a position predicate. Parentheses are needed so the predicate applies to the entire node set produced by the absolute location path, rather than just the last step, otherwise it would select the first year of each card, instead of the first year overall:
+[[[
+(tree xpath: '(/cardset/card/year)[1]/ancestor::card/cardname'
+>>> "a XPathNodeSet(<cardname lang=""en"">Arcane Lighthouse</cardname>)"
+]]]
+
+
+
+
+
+
 !!! Conclusion
 
-XPath is a powerful language and the Pharo XPath library developed and maintained by Monty Kamath is implementing the full standard 1.0. 
-In addition coupled with life programming capabilities of Pharo it gives a really powerful to explore structured data. 
+XPath is a powerful language. The Pharo XPath library developed and maintained by Monty van OS and the Pharo Extras Team  implements the full standard 1.0. Coupled with the live programming capabilities of Pharo, it gives a really powerful way to explore structured XML data. 
 
 
 
