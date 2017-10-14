@@ -78,6 +78,8 @@ Note that the escaped the =='== with an extra quote as in ==can\'\'t==.
 !!! Nodes, node sets and atomic values
 We will be working with three kinds of XPath constructs: nodes, node sets, and atomic values.
 
+Node sets are sets (duplicate-free collections) of nodes. All node sets produced by XPath location path expressions are sorted in document order, the order in the document source that they appear in.
+
 The following elements are nodes:
 [[[
 <cardset> (root element node)
@@ -87,24 +89,33 @@ The following elements are nodes:
 lang="en" (attribute node)
 ]]]
 
-Atomic values are nodes with no children or parent. Here are some examples of atomic values:
+Atomic values are strings, numbers, and booleans. Here are some examples of atomic values:
 
 [[[
 Arcane Lighthouse
-
+ 
 "en"
+
+2.5
+
+-1
+
+true
+
+false
 ]]]
+
 
 !!! Basic tree relationships
 
 Since we are talking about trees, nodes can have multiple relationships with each other: parent, child and siblings. 
 Let us set some simple vocabulary. 
 
-- ""Parent."" Each element and attribute has one parent. In the Arcane Lighthouse example, the card element is the parent of the cardname, types, year, rarity, expansion and cardtext.
+- ""Parent."" Each node can have at most one parent. The root node of the tree, usually a document, has no parent. In the Arcane Lighthouse example, the card element is the parent of the cardname, types, year, rarity, expansion and cardtext elements. In XPath, attribute and namespace nodes treat the element they belong to as their parent.
 
-- ""Children."" Element nodes may have zero, one or more children. cardname, types, year, rarity, expansion and cardtext nodes are all children of the card element
+- ""Children."" Document and element nodes may have zero, one or more children, which can be elements, text nodes, comments or processing instructions. The cardname, types, year, rarity, expansion and cardtext elements are all children of the card element. Confusingly, even though attribute and namespace nodes can have element parents in XPath, they aren't children of their parent elements.
 
-- ""Siblings."" Siblings are nodes that have the same parent. cardname, types, year, rarity, expansion and cardtext nodes are all siblings. 
+- ""Siblings."" Siblings are child nodes that have the same parent. The cardname, types, year, rarity, expansion and cardtext elements are all siblings. Attributes and and namespace nodes have no siblings.
 
 - ""Ancestors."" A node's parent, parent's parent, etc. Ancestors of the cardname element are the card element and the cardset nodes. 
 
@@ -151,18 +162,18 @@ Select the raw tab and click on self in the inspector (as shown in Figure *@insp
 
 !!! Node selection
 
-The following table shows the XPath expressions. 
+The following table shows the XPath expressions. Often the current node is also named the context. 
 
 | ""Expression"" |""Description""|
-| nodename | Selects all nodes with the name "nodename" |
-|/ |Selects from the root node|
-|// | Selects any node from the current node that match the selection|
-| . | Selects the current node |
-|..|Selects the parent of the current node|
-|@ |Selects attributes|
+| nodename | Selects all child nodes with the name "nodename" |
+|/ |Selects the root node|
+|// | Selects any node from the current node that match the context selection|
+| . | Selects the context (current) node |
+|..|Selects the parent of the context (current) node |
+|@ |Selects attributes of the context node |
 
 
-In the following we expect that the variable ==tree== is bound the full document tree we previously created parsing the xml string.
+In the following we expect that the variable ==tree== is bound the full document tree we previously created parsing the XML string.
 In Pharo expressions selecting nodes returns set of nodes. Now let us play with the system to really see how it works. 
 
 !!!! Node tag name 
