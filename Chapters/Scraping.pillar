@@ -179,7 +179,7 @@ NeoJSONWriter toStringPretty:
 		yourself).
 ]]]
 
-+Sample of JSON output.>file://figures/JSON_sample.png|width=100|label=jsonspec+
++Sample of JSON output.>file://figures/JSON_Sample.png|width=100|label=jsonspec+
 
 !!! Turning the pages
 The code above will extract the data for one ingredient, and could obviously be repeated for all the 50 items in one page of data. However, the entire database contains 8789 ingredients at the time of writing, which amounts to 176 pages. The database seems to impose a limit of 50 ingredients per page, so to process the entire database we need to read the pages in succession. Each page contains a link which, if clicked, will load the next page. We can do this programmatically, by finding the link after processing the page. The link is contained in node ==<div class="paginateButtons">==, so we can use the code:
