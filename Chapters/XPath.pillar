@@ -1,6 +1,6 @@
 !! Little Journey into XPath
 
-XPath is the de factor standard language for navigating an XML document and selecting nodes from it. XPath expressions act as queries that identifies nodes. In this chapter we will go through the main concepts and show some of the ways we can access nodes in a xml document. All the expressions can be executed on the spot, so do not hesitate to experiment with them. 
+XPath is the de factor standard language for navigating an XML document and selecting nodes from it. XPath expressions act as queries that identifies nodes. In this chapter we will go through the main concepts and show some of the ways we can access nodes in a xml document. All the expressions can be executed on the spot, so do not hesitate to experiment with them.
 
 !!! Getting started
 
@@ -49,7 +49,7 @@ and is shown in Figure *@ligthouse*.
 !!! Creating a tree of objects
 
 In Pharo it is always powerful to get an object and interact with it. 
-So let us do that now using the ==XMLDOMParser== to convert our data in a tree of objects.
+So let us do that now using the ==XMLDOMParser== to convert our data in a tree of objects (as shown in Figure *@inspectorx*).
 Note that the escaped the =='== with an extra quote as in ==can\'\'t==. 
 
 [[[
@@ -73,7 +73,7 @@ Note that the escaped the =='== with an extra quote as in ==can\'\'t==.
 ]]]
 
 
-+Grabbing and playing with a tree.>file://figures/xpath1.png|width=100|label=inspector+
++Grabbing and playing with a tree.>file://figures/xpath1.png|width=100|label=inspectorx+
 
 !!! Nodes, node sets and atomic values
 We will be working with three kinds of XPath constructs: nodes, node sets, and atomic values.

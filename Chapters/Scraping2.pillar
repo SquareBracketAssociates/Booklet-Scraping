@@ -108,7 +108,7 @@ This one is more interesting:
 
 We can build queries to identify node elements having this id.
 To avoid to perform an internet request each time, we typed directly XPath path in the XPath pane of the inspector as shown in Figure *@row*.
-Now trying to get faster we looked at all the class="row" as shown in Figure *@row*
+Now trying to get faster we looked at all the class="row" as shown in Figure *@row*.
 
 [[[
 //div[@class='row']

@@ -66,9 +66,9 @@ ingredientsXML inspect
 ]]]
 
 
-You can execute the expression and inspect its result. You will obtain an inspector on the tree and you can navigate this tree as shown in Figure *@inspector*. 
+You can execute the expression and inspect its result. You will obtain an inspector on the tree and you can navigate this tree as shown in Figure *@inspector1*. 
 
-+Navigating the XML document inside the inspector.>file://figures/InspectorXML.png|width=100|label=inspector+
++Navigating the XML document inside the inspector.>file://figures/InspectorXML.png|width=100|label=inspector1+
 
 Since you may want to work on files that you saved on your disc you can also parse a file and get an XML tree as follows:
 
