@@ -180,9 +180,12 @@ Location path expressions return node sets, which are empty if no nodes match. N
 
 There are several way to test and select nodes.
 
-| ""nodename"" | Selects all chile nodes with the name "nodename" |
+| ""nodename"" | Selects all child nodes with the name "nodename" |
 | card | Selects all child nodes with the name "card" |
-| ""prefix:localName"" | Selects all child nodes with the qualified name "prefix:localName", or if at least one prefix/namespace URI pair was declared in the XPathContext, the child nodes with the local name "localName" and the namespace URI bound to "prefix"|
+| ""prefix:localName"" | Selects all child nodes with the qualified name "prefix:localName"|
+| | or if at least one prefix/namespace URI pair was declared in the | 
+| |  XPathContext, the child nodes with the local name "localName" | 
+| | and the namespace URI bound to "prefix"|
 
 In standard XPath, qualified name tests like prefix:localName select nodes with the same local name and the namespace URI of the prefix, which must be declared in the controlling XPath context prior to evaluation. The selected nodes from the document can have different prefixes (or none at all), because matching is based on local name and namespace URI.
 
