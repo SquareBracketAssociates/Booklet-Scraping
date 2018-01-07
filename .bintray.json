@@ -3,7 +3,7 @@
         "name": "booklet-scraping",
         "repo": "wip",
         "subject": "squarebracketassociates",
-        "desc": "Scriping XPath and more",
+        "desc": "Scripting XPath and more",
         "licenses": ["MIT"],
         "website_url": "https://github.com/SquareBracketAssociates/Booklet-Scraping",
         "issue_tracker_url": "https://github.com/SquareBracketAssociates/Booklet-Scraping/issues",
