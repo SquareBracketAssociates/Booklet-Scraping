@@ -1,14 +1,28 @@
-sudo: required
-services:
-- docker
+language: smalltalk
+sudo: false
 
-before_install:
-- docker pull dpollet/texlive:pillar
+os:
+  - linux
 
-script: |
-  docker run --tty --rm --volume $PWD:/work dpollet/texlive:pillar bash -c "\
-    wget --quiet --output-document=- 'https://raw.githubusercontent.com/pillar-markup/pillar/master/download.sh' | bash \
-    && make book "
+smalltalk:
+  - Pharo-6.1
+
+# Unit tests run the normal pillar tests
+# Integration tests test that pillar itself can interact with generated files, pdf generation, etc.
+# System tests test that we can install and use pillar as a black box
+env:
+  matrix:
+  - JOB=test TYPE=System ARCHETYPE=book OUTPUT=pdf
+
+install:
+  # Pillar installation
+  - git clone https://github.com/pillar-markup/pillar.git -b newpipeline  # Clone pillar
+  - cd pillar && ./scripts/build.sh && cd ..                              # Run pillar build script. Pillar will be built in `pwd`/build!
+  - . pillar/scripts/ci/ensure_latex.sh                                   # Install latex
+  - ./pillar/scripts/ci/ensure_book_dependencies.sh                       # Install latex dependencies required by pillar
+  
+script:
+  - ./pillar/build/pillar build pdf
 
 deploy:
 - provider: bintray
@@ -18,7 +32,8 @@ deploy:
   skip_cleanup: true
   user: ducasse
   key:
-    secure: rS3Cv5l/vaMGSvAdDljY8MItinHd9DE3eyB/o59AL0FUzHfw/BjUZFLBxL2r4zxMJOYzOzfn9ISi8LzWPZ9I+yPJIHe9yjmI3n76bT3GYUBzAjROHmyzIaEn/t/MCzDL3vLSoc75I8A40JE+AF2ywcCkjUKoff+8vbkouiufJSR5fO05qNiluHvRDdv1tU87NnSexxY0IF5ExJBClj0e69V/NXNguJbkFi+FScb3A2gQZcxlbfEQdFJpC/OmmPAMGhgLjGhFajljZSJGAqLaX3YJHFdtPl9Bws9Td1XP/iTd4uQ1OkUg1Aqr+AglOu8WJM/FvvnHIg8g7wW9JEMiyAeJvYNJiPqTaUZZp7MQoeyW9dBeCMtyV+vHArXbvzNFoCQ3276ukPYVRYGrRRwRudP8yqnvUxuGauJQ4lZCqGq1ZL67VdkPYozE3tu5V8N54pop2CRvOq7SfrOFPvzKgK4Kqt+ZCIjhsBk9Bx48LA9UTDA/RdYuw/WUTHcFSqvCAo0hHSci92m3IitbHG9RXzakIRDHPBR6ljxyVfowgd4FeLLX8dpo8O31VDGN/jPoF3JMrjfwvaBnLcsMOlJfvskU9OYGPFE725ctaVtDYnGu/m4RykEAzAwQ39pO3QUQUAc3awHIP8PCo7twKj+W7d0Db29uMw+zUYr+Y2iQjYo=
+    secure: XS7rMdYs4ukZgnu3e2QMQDj1XdcDn4nxaJbADNZBHA1VPTRjSK6hEr9BHaK+15yIeEf8SPNhrPHYvWheJs1hYjda8jybKVA4MdBeMfh2N7Y9Unqu1wrMT+YKnhk0a/C6J2gnL5W2g3tBB3z+shvT9rzfmuoJBqLvXJzcGuZ1gdBJjsodEsvJ9r6Yx+8OuNJOEV4iLXmIwhQ9alyhgYLgz78I5WSlPufUfoVpuZmeF07zuPATpgLs0Qr+yrC/iRugrpqH77lZzlpJ+vPmSW7GEm4dCir9sh3Ekis7FXWPfwrxybd7XqhIOOI5NyY2Cl7euVGYAYPLbTaY2GlWShnt4dD96Nz8cEV05H7U0Pmslu4sgeYcuumYHNzLMu8TvngQCJjbQX8T8wX08iGygROwJYsyOU2Y/o+rnlHPXtjzKDjbih5A7gQLjXmhZ1YePeaNAMDb+v35ZHmrEeqb8bQSL0/W3BR4k1Muy1bMeZDrAFZftBAl4v6cNqQVrffsNZ4ZoZ5C7mU1k8smWs5hto+V7yuZgwYe1FAYxzdZIkyOE2czGGTdvwTG00xjyM1sJpLbnsQNOmsqicSMt+H8NoQQgeMU5CYa4jWDnZ4ftfdBcI+t7hm0JPgYFrjU19Bl2UAH9v6a4Wjp+mx1O/Ro6WwGcQri5a1wVzSoA+5ETE9Uo64=
+	
 - provider: releases
   file: build/scrapingbook.pdf
   on:
