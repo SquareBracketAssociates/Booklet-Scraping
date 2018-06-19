@@ -38,7 +38,7 @@ tree xpath: '//img'
 
 Toying with the inspector, we come up with the following ugly expression to get the name of the JPEG
 
-[[[
+[[[testcase=true
 | tree |
 tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430').
 ((tree xpath: '//img') third @ 'src') first value allButFirst: 5
@@ -124,7 +124,7 @@ The following expression returns the pair label and value for example for the ca
 
 So we can now query all the fields
 
-[[[
+[[[testcase=true
 | tree |
 tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430').
 container := tree xpath: '//div[@class=''row'']/div[@class=''label'']| //div[@class=''row'']/div[@class=''value'']'.
@@ -148,7 +148,7 @@ container := tree xpath: '//div[@class=''row'']/div[@class=''label'']| //div[@cl
 
 And convert it into JSON for fun
 
-[[[
+[[[testcase=true
 | tree dict |
 tree := (XMLHTMLParser parseURL: 'http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=389430').
 container := tree xpath: '//div[@class=''row'']/div[@class=''label'']| //div[@class=''row'']/div[@class=''value'']'.
