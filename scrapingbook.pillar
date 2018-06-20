@@ -10,6 +10,6 @@ I would like to thank Monty the developer of the XML package suite for its great
 Stef
 
 
-${inputFile:value=Chapters/XPath.pillar}$
-${inputFile:value=Chapters/Scraping.pillar}$
-${inputFile:value=Chapters/Scraping2.pillar}$
+${inputFile:path=Chapters/XPath.pillar}$
+${inputFile:path=Chapters/Scraping.pillar}$
+${inputFile:path=Chapters/Scraping2.pillar}$
