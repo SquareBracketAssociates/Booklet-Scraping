@@ -10,5 +10,4 @@
 Soon [Browse] the directory for released versions of the booklet or
 look here for more [Books and Booklets](http://files.pharo.org/books/)
 
-You can find the PDF at 
-lsThe result from the latest successful Travis build can be found [on Bintray (PDF)](https://bintray.com/squarebracketassociates/wip/download_file?file_path=scrapingbook-wip.pdf).
+The result from the latest successful Travis build can be found on the releases panel of the this page. 
