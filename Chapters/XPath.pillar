@@ -6,17 +6,17 @@ XPath is the de factor standard language for navigating an XML document and sele
 
 You should load the XML parser and XPath library as follows:
 [[[
-Gofer it
-   smalltalkhubUser: 'PharoExtras' project: 'XMLParserHTML';
-   configurationOf: 'XMLParserHTML';
-   loadStable.
+Metacello new
+	baseline: 'XMLParserHTML';
+	repository: 'github://pharo-contributions/XML-XMLParserHTML:1.6.x/src';
+	load.
 ]]]
 
 [[[
-Gofer it
-   smalltalkhubUser: 'PharoExtras' project: 'XPath';
-   configurationOf: 'XPath';
-   loadStable.
+Metacello new
+	baseline: 'XPath';
+	repository: 'github://pharo-contributions/XML-XPath:2.2.x/src';
+	load.	
 ]]]
 
 
