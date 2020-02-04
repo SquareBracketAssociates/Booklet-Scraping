@@ -9,31 +9,57 @@ This chapter has been originally written by Peter Kenny and we thank him for sha
 You can use the Catalog browser to load XMLParserHTML and NeoJSON just execute the following expressions: 
 
 [[[
-Gofer it
-   smalltalkhubUser: 'PharoExtras' project: 'XMLParserHTML';
-   configurationOf: 'XMLParserHTML';
-   loadStable.
+Metacello new
+	baseline: 'XMLParserHTML';
+	repository: 'github://pharo-contributions/XML-XMLParserHTML:1.6.x/src';
+	load.
 ]]]
 
 [[[
-Gofer it
-   smalltalkhubUser: 'PharoExtras' project: 'XPath';
-   configurationOf: 'XPath';
-   loadStable.
+Metacello new
+	baseline: 'XPath';
+	repository: 'github://pharo-contributions/XML-XPath:2.2.x/src';
+	load.	
 ]]]
 
 [[[
-Gofer it
-   smalltalkhubUser: 'SvenVanCaekenberghe' project: 'Neo';
-   configurationOf: 'NeoJSON';
-   loadStable.
+Metacello new
+  repository: 'github://svenvc/NeoJSON/repository';
+  baseline: 'NeoJSON';
+  load.
 ]]]
+
+%[[[
+%Gofer it
+%   smalltalkhubUser: 'PharoExtras' project: 'XMLParserHTML';
+%   configurationOf: 'XMLParserHTML';
+%   loadStable.
+%]]]
+
+%[[[
+%Gofer it
+%   smalltalkhubUser: 'PharoExtras' project: 'XPath';
+%   configurationOf: 'XPath';
+%   loadStable.
+%]]]
+
+%[[[
+%Gofer it
+%   smalltalkhubUser: 'SvenVanCaekenberghe' project: 'Neo';
+%   configurationOf: 'NeoJSON';
+%   loadStable.
+%]]]
 
 
 
 
 !!! Define the Problem
-This tutorial is based on a real life problem. We need to consult a database published by the US Department of Agriculture, extract data for over 8000 food ingredients and their nutrient contents and output the results as a JSON file. The main list of ingredients can be found at the following url: *https://ndb.nal.usda.gov/ndb/search/list?sort=ndb&ds=Standard+Reference* (as shown in Figure *@figfood*). You can also find the HTML version of the file in the github repository of this book *https://github.com/SquareBracketAssociates/Booklet-Scraping/resources*.
+This tutorial is based on a real life problem. We need to consult a database published by the US Department of Agriculture, extract data for over 8000 food ingredients and their nutrient contents and output the results as a JSON file. The main list of ingredients can be found at the following url: *https://ndb.nal.usda.gov/ndb/search/list?sort=ndb&ds=Standard+Reference* (as shown in Figure *@figfood*).
+
+Since the web site disapparead from the moment we wrote this tutorial,  we suggest to try (not tested) the wayback archive of the web site. 
+*https://web.archive.org/web/20150324141455/http://ndb.nal.usda.gov/ndb/foods?format=&count=&max=35&sort=&fgcd=&manu=&lfacet=&qlookup=&offset=140&order=desc*
+
+In addition we archive some limited files. You can also find the HTML version of the file in the github repository of this book *https://github.com/SquareBracketAssociates/Booklet-Scraping/* under the folder resources (*https://github.com/SquareBracketAssociates/Booklet-Scraping/tree/master/resources*).
 
 +Food list.>file://figures/food.png|width=100|label=figfood+
 
