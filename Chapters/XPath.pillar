@@ -167,7 +167,8 @@ The following table shows the XPath expressions. Often the current node is also 
 | ""Expression"" |""Description""|
 | nodename | Selects all child nodes with the name "nodename" |
 |/ |Selects the root node|
-|// | Selects any node from the current node that match the context selection|
+|// | Selects any node from the current node that |
+| | matches the context selection|
 | . | Selects the context (current) node |
 |..|Selects the parent of the context (current) node |
 |@ |Selects attributes of the context node |
@@ -182,10 +183,11 @@ There are several way to test and select nodes.
 
 | ""nodename"" | Selects all child nodes with the name "nodename" |
 | card | Selects all child nodes with the name "card" |
-| ""prefix:localName"" | Selects all child nodes with the qualified name "prefix:localName"|
-| | or if at least one prefix/namespace URI pair was declared in the | 
-| |  XPathContext, the child nodes with the local name "localName" | 
-| | and the namespace URI bound to "prefix"|
+| ""prefix:localName"" | Selects all child nodes with the qualified |
+| | name "prefix:localName"  or if at least one prefix
+| | or namespace URI pair was declared in the | 
+| |  XPathContext, the child nodes with the local name  | 
+| | "localName" and the namespace URI bound to "prefix"|
 
 In standard XPath, qualified name tests like prefix:localName select nodes with the same local name and the namespace URI of the prefix, which must be declared in the controlling XPath context prior to evaluation. The selected nodes from the document can have different prefixes (or none at all), because matching is based on local name and namespace URI.
 
@@ -193,8 +195,8 @@ To simplify things, the Pharo XPath library (unlike others) by default matches q
 
 !!!! Context and parent
 
-| . | Selects the current context node |
-|..|Selects the parent of the current context node |
+| . | Selects the current context node                                |
+|..|Selects the parent of the current context node             |
 
 The following expression shows that ==.== (period) selects the context node, initially the node XPath evaluation begins in.
 
@@ -211,7 +213,8 @@ The operator ==/== selects from the root node.
 
 | ""/"" | ""Selects from the root node""|
 | /cardset | Selects the root element cardset |
-| cardset/card | Selects all the card grandchildren from the cardset children of the context node |
+| cardset/card | Selects all the card grandchildren|
+| |  from the cardset children of the context node |
 
 The following expression selects all the card nodes under cardset node.
 
@@ -234,8 +237,10 @@ The ==//== operation selects all the nodes matching the selection.
 
 
 | ""//"" | Selects from the context (current) node and all descendants |
-| //year |Selects all year node children of the context node and of its descendants |
-| cardset//year | Selects all year node children of the cardset context node children and their descendants |
+| //year |Selects all year node children of the context node and |
+| | of its descendants |
+| cardset//year | Selects all year node children of the cardset context |
+| | node children and their descendants |
 
 Let us try with another element such as the expansion of a card. 
 [[[testcase=true
