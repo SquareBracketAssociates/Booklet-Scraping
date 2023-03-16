@@ -13,10 +13,10 @@ We revised a new version for Pharo 70 and 80. The libraries are now hosted on gi
 Special thank to Torsten Bergman for the migration of the libraries on github.
 
 A final point, the website originally used does not exist anymore. At that time we archived some files under 
-*https://github.com/SquareBracketAssociates/Booklet-Scraping/tree/master/resources*
+[https://github.com/SquareBracketAssociates/Booklet-Scraping/tree/master/resources]()
 
 Now you may try to use the web archive. Here is a reference that seems to work. 
-*https://web.archive.org/web/20150324141455/http://ndb.nal.usda.gov/ndb/foods?format=&count=&max=35&sort=&fgcd=&manu=&lfacet=&qlookup=&offset=140&order=desc*.
+[https://web.archive.org/web/20150324141455/http://ndb.nal.usda.gov/ndb/foods?format=&count=&max=35&sort=&fgcd=&manu=&lfacet=&qlookup=&offset=140&order=desc]().
 
 We are sorry to see all our efforts impacted by such changes but we cannot do magic.
 
@@ -24,6 +24,6 @@ We are sorry to see all our efforts impacted by such changes but we cannot do ma
 Stef
 
 
-${inputFile:path=Chapters/XPath.pillar}$
-${inputFile:path=Chapters/Scraping.pillar}$
-${inputFile:path=Chapters/Scraping2.pillar}$
+<!inputFile|path=Chapters/XPath.md!>
+<!inputFile|path=Chapters/Scraping.md!>
+<!inputFile|path=Chapters/Scraping2.md!>
